@@ -5,10 +5,10 @@
 
 class MissionariesAlgorithm {
     /**
-     * BFS برای مسئله 3 کشیش
+     * BFS برای مسئله 3 کشیش + 1 آدم‌خوار
      */
     static solveMissionariesOnly() {
-        const initialState = { leftM: 3, leftA: 0, boat: 0 }; // boat: 0=چپ, 1=راست
+        const initialState = { leftM: 3, leftA: 1, boat: 0 }; // boat: 0=چپ, 1=راست
         const goalState = { leftM: 0, leftA: 0, boat: 1 };
 
         return this.bfs(initialState, goalState, 'missionaries');
@@ -25,10 +25,10 @@ class MissionariesAlgorithm {
     }
 
     /**
-     * DFS برای مسئله 3 کشیش
+     * DFS برای مسئله 3 کشیش + 1 آدم‌خوار
      */
     static solveMissionariesDFS() {
-        const initialState = { leftM: 3, leftA: 0, boat: 0 };
+        const initialState = { leftM: 3, leftA: 1, boat: 0 };
         const goalState = { leftM: 0, leftA: 0, boat: 1 };
 
         return this.dfs(initialState, goalState, 'missionaries');
@@ -104,8 +104,8 @@ class MissionariesAlgorithm {
      */
     static getNextStates(state, type) {
         const nextStates = [];
-        const rightM = type === 'missionaries' ? 0 : 3 - state.leftM;
-        const rightA = type === 'missionaries' ? 0 : 3 - state.leftA;
+        const rightM = type === 'missionaries' ? 3 - state.leftM : 3 - state.leftM;
+        const rightA = type === 'missionaries' ? 1 - state.leftA : 3 - state.leftA;
 
         // حرکت‌های ممکن: (missionaries, cannibals)
         const moves = [[1, 0], [2, 0], [1, 1], [0, 1], [0, 2]];
@@ -151,8 +151,24 @@ class MissionariesAlgorithm {
      */
     static isValidState(state, type) {
         if (type === 'missionaries') {
-            // تنها کشیش‌ها - آدم‌خوار نیست
-            return state.leftM >= 0 && state.leftM <= 3 && state.leftA === 0;
+            // 3 کشیش + 1 آدم‌خوار
+            if (state.leftM < 0 || state.leftM > 3 || state.leftA < 0 || state.leftA > 1) {
+                return false;
+            }
+            
+            // بررسی سمت چپ
+            if (state.leftM > 0 && state.leftA > state.leftM) {
+                return false;
+            }
+
+            // بررسی سمت راست
+            const rightM = 3 - state.leftM;
+            const rightA = 1 - state.leftA;
+            if (rightM > 0 && rightA > rightM) {
+                return false;
+            }
+
+            return true;
         }
 
         // بررسی سمت چپ
